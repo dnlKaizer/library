@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import br.cefetmg.library.model.AuthorBook;
 import br.cefetmg.library.model.Book;
 import br.cefetmg.library.service.BookService;
 import jakarta.validation.Valid;
@@ -52,6 +53,18 @@ public class BookController {
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         bookService.deleteById(id);
+        return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
+    }
+
+    @PostMapping("/{bookId}/authors/{authorId}")
+    public ResponseEntity<AuthorBook> addAuthorToBook(@PathVariable Long bookId, @PathVariable Long authorId) {
+        AuthorBook authorBook = bookService.addAuthorToBook(bookId, authorId);
+        return ResponseEntity.status(HttpStatus.CREATED).body(authorBook);
+    }
+
+    @DeleteMapping("/{bookId}/authors/{authorId}")
+    public ResponseEntity<Void> removeAuthorFromBook(@PathVariable Long bookId, @PathVariable Long authorId) {
+        bookService.removeAuthorFromBook(bookId, authorId);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
     }
 
