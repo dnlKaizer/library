@@ -4,7 +4,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.cefetmg.library.model.Author;
 import br.cefetmg.library.model.AuthorBook;
@@ -12,7 +14,6 @@ import br.cefetmg.library.model.AuthorBookId;
 import br.cefetmg.library.model.Book;
 import br.cefetmg.library.repository.AuthorBookRepository;
 import br.cefetmg.library.repository.BookRepository;
-import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 
@@ -27,7 +28,7 @@ public class BookService {
     public Book findById(Long id) {
         Objects.requireNonNull(id, "O id do livro não pode ser nulo.");
         return bookRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Livro não encontrado com id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado com id: " + id));
     }
 
     public List<Book> findAll() {
@@ -79,6 +80,8 @@ public class BookService {
 
     public void deleteById(Long id) {
         Objects.requireNonNull(id, "O id do livro não pode ser nulo.");
+        if (!bookRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Livro não encontrado com id: " + id);
         bookRepository.deleteById(id);
     }
 
@@ -89,7 +92,7 @@ public class BookService {
 
         AuthorBookId relationId = new AuthorBookId(authorId, bookId);
         if (authorBookRepository.existsById(relationId)) {
-            throw new IllegalStateException("A relação entre o autor e o livro já existe.");
+            throw new ResponseStatusException(HttpStatus.CONFLICT, "A relação entre o autor e o livro já existe.");
         }
 
         AuthorBook authorBook = new AuthorBook(relationId, author, book);
@@ -103,7 +106,7 @@ public class BookService {
 
         AuthorBookId relationId = new AuthorBookId(authorId, bookId);
         if (!authorBookRepository.existsById(relationId)) {
-            throw new EntityNotFoundException("A relação entre o autor e o livro não existe.");
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "A relação entre o autor e o livro não existe.");
         }
         authorBookRepository.deleteById(relationId);
     }

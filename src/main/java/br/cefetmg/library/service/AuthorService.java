@@ -3,11 +3,12 @@ package br.cefetmg.library.service;
 import java.util.List;
 import java.util.Objects;
 
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import br.cefetmg.library.model.Author;
 import br.cefetmg.library.repository.AuthorRepository;
-import jakarta.persistence.EntityNotFoundException;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -19,7 +20,7 @@ public class AuthorService {
     public Author findById(Long id) {
         Objects.requireNonNull(id, "O id do autor não pode ser nulo.");
         return authorRepository.findById(id)
-            .orElseThrow(() -> new EntityNotFoundException("Autor não encontrado com id: " + id));
+            .orElseThrow(() -> new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado com id: " + id));
     }
 
     public List<Author> findAll() {
@@ -46,6 +47,8 @@ public class AuthorService {
 
     public void deleteById(Long id) {
         Objects.requireNonNull(id, "O id do autor não pode ser nulo.");
+        if (!authorRepository.existsById(id))
+            throw new ResponseStatusException(HttpStatus.NOT_FOUND, "Autor não encontrado com id: " + id);
         authorRepository.deleteById(id);
     }
     
