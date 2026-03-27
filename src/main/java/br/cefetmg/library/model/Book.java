@@ -4,6 +4,9 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -44,9 +47,13 @@ public class Book {
 
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonProperty(access = JsonProperty.Access.WRITE_ONLY)
     private List<AuthorBook> authorBooks = new ArrayList<>();
 
+    @JsonIgnoreProperties("books")
     public List<Author> getAuthors() {
+        if (authorBooks == null) return List.of();
+
         return authorBooks.stream()
             .map(AuthorBook::getAuthor)
             .toList();

@@ -1,5 +1,7 @@
 package br.cefetmg.library.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.EmbeddedId;
 import jakarta.persistence.Entity;
 import jakarta.persistence.JoinColumn;
@@ -26,11 +28,13 @@ public class AuthorBook {
     @ManyToOne
     @MapsId("authorId")
     @JoinColumn(name = "author_id")
+    @JsonIgnoreProperties("books")
     private Author author;
 
     @ManyToOne
     @MapsId("bookId")
     @JoinColumn(name = "book_id")
+    @JsonIgnoreProperties("authors")
     private Book book;
 
 }

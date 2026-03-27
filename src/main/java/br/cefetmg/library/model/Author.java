@@ -3,6 +3,9 @@ package br.cefetmg.library.model;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -40,9 +43,13 @@ public class Author {
 
     @OneToMany(mappedBy = "author", cascade = CascadeType.ALL, orphanRemoval = true)
     @Builder.Default
+    @JsonIgnore
     private List<AuthorBook> authorBooks = new ArrayList<>();
 
+    @JsonIgnoreProperties("authors")
     public List<Book> getBooks() {
+        if (authorBooks == null) return List.of();
+
         return authorBooks.stream()
             .map(AuthorBook::getBook)
             .toList();

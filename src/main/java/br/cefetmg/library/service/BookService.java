@@ -1,5 +1,6 @@
 package br.cefetmg.library.service;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,10 +34,34 @@ public class BookService {
         return bookRepository.findAll();
     }
 
+    @Transactional
     public Book insert(Book book) {
         Objects.requireNonNull(book, "O livro não pode ser nulo.");
+        
+        List<AuthorBook> relationsFromRequest = book.getAuthorBooks();
+        
         book.setId(null);
-        return bookRepository.save(book);
+        book.setAuthorBooks(null); 
+
+        Book savedBook = bookRepository.save(book);
+
+        if (relationsFromRequest == null || relationsFromRequest.isEmpty()) return savedBook;
+        
+        savedBook.setAuthorBooks(new ArrayList<>());
+
+        relationsFromRequest.forEach(relations -> {
+            Long authorId = relations.getId().getAuthorId();
+            Author author = authorService.findById(authorId);
+            
+            AuthorBookId relationId = new AuthorBookId(authorId, savedBook.getId());
+            AuthorBook authorBook = new AuthorBook(relationId, author, savedBook);
+            
+            AuthorBook savedAuthorBook = authorBookRepository.save(authorBook);
+
+            savedBook.getAuthorBooks().add(savedAuthorBook);
+        });
+        
+        return savedBook;
     }
 
     public Book update(Long id, Book book) {
