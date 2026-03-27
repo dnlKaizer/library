@@ -35,11 +35,13 @@ public class AuthorService {
     public Author update(Long id, Author author) {
         Objects.requireNonNull(author, "O autor não pode ser nulo.");
         
-        if (!authorRepository.existsById(id))
-            throw new EntityNotFoundException("Autor não encontrado com id: " + id);
+        Author existingAuthor = this.findById(id);
 
-        author.setId(id);
-        return authorRepository.save(author);
+        existingAuthor.setName(Objects.requireNonNullElse(author.getName(), existingAuthor.getName()));
+        existingAuthor.setNationality(Objects.requireNonNullElse(author.getNationality(), existingAuthor.getNationality()));
+        existingAuthor.setDescription(Objects.requireNonNullElse(author.getDescription(), existingAuthor.getDescription()));
+
+        return authorRepository.save(existingAuthor);
     }
 
     public void deleteById(Long id) {

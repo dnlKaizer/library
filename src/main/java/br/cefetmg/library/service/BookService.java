@@ -67,11 +67,14 @@ public class BookService {
     public Book update(Long id, Book book) {
         Objects.requireNonNull(book, "O livro não pode ser nulo.");
 
-        if (!bookRepository.existsById(id))
-            throw new EntityNotFoundException("Livro não encontrado com id: " + id);
+        Book existingBook = this.findById(id);
 
-        book.setId(id);
-        return bookRepository.save(book);
+        existingBook.setTitle(Objects.requireNonNullElse(book.getTitle(), existingBook.getTitle()));
+        existingBook.setIsbn(Objects.requireNonNullElse(book.getIsbn(), existingBook.getIsbn()));
+        existingBook.setPublicationDate(Objects.requireNonNullElse(book.getPublicationDate(), existingBook.getPublicationDate()));
+        existingBook.setDescription(Objects.requireNonNullElse(book.getDescription(), existingBook.getDescription()));
+
+        return bookRepository.save(existingBook);
     }
 
     public void deleteById(Long id) {
