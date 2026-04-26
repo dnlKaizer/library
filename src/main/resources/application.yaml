@@ -16,3 +16,10 @@ spring:
       hibernate:
         format_sql: true
         dialect: org.hibernate.dialect.MySQLDialect
+
+api:
+  security:
+    token:
+      secret: ${JWT_SECRET:library-secret-change-me}
+      issuer: ${JWT_ISSUER:library-api}
+      expiration-hours: ${JWT_EXPIRATION_HOURS:24}
