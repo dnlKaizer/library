@@ -4,6 +4,7 @@ import java.util.List;
 
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -26,30 +27,35 @@ public class AuthorController {
     private final AuthorService authorService;
 
     @GetMapping("/{id}")
+    @PreAuthorize("hasAuthority('AUTHOR_READ')")
     public ResponseEntity<Author> findById(@PathVariable Long id) {
         Author author = authorService.findById(id);
         return ResponseEntity.status(HttpStatus.OK).body(author);
     }
 
     @GetMapping("")
+    @PreAuthorize("hasAuthority('AUTHOR_READ')")
     public ResponseEntity<List<Author>> findAll() {
         List<Author> authors = authorService.findAll();
         return ResponseEntity.status(HttpStatus.OK).body(authors);
     }
 
     @PostMapping("")
+    @PreAuthorize("hasAuthority('AUTHOR_WRITE')")
     public ResponseEntity<Author> insert(@RequestBody @Valid Author author) {
         Author createdAuthor = authorService.insert(author);
         return ResponseEntity.status(HttpStatus.CREATED).body(createdAuthor);
     }
 
     @PutMapping("/{id}")
+    @PreAuthorize("hasAuthority('AUTHOR_WRITE')")
     public ResponseEntity<Author> update(@PathVariable Long id, @RequestBody Author author) {
         Author updatedAuthor = authorService.update(id, author);
         return ResponseEntity.status(HttpStatus.OK).body(updatedAuthor);
     }
 
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasAuthority('AUTHOR_WRITE')")
     public ResponseEntity<Void> deleteById(@PathVariable Long id) {
         authorService.deleteById(id);
         return ResponseEntity.status(HttpStatus.NO_CONTENT).build();
