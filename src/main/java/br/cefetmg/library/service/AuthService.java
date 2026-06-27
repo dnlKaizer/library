@@ -8,11 +8,11 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import br.cefetmg.library.config.security.TokenProvider;
 import br.cefetmg.library.controller.dto.LoginRequest;
 import br.cefetmg.library.controller.dto.LoginResponse;
 import br.cefetmg.library.model.security.User;
 import br.cefetmg.library.repository.UserRepository;
+import br.cefetmg.library.security.TokenService;
 import lombok.RequiredArgsConstructor;
 
 @Service
@@ -20,18 +20,17 @@ import lombok.RequiredArgsConstructor;
 public class AuthService implements UserDetailsService {
 
     private final UserRepository userRepository;
-    private final TokenProvider tokenService;
+    private final TokenService tokenService;
 
     public LoginResponse login(LoginRequest loginRequest, AuthenticationManager authenticationManager) {
-        var usernamePassword = new UsernamePasswordAuthenticationToken(loginRequest.login(), loginRequest.password());
+        var usernamePassword = new UsernamePasswordAuthenticationToken(loginRequest.username(), loginRequest.password());
         Authentication authentication = authenticationManager.authenticate(usernamePassword);
 
         User user = (User) authentication.getPrincipal();
-        TokenProvider.GeneratedToken generatedToken = tokenService.generateToken(user);
+        String token = tokenService.generateToken(user.getUsername());
 
         return new LoginResponse(
-            generatedToken.token(),
-            generatedToken.expiresAt(),
+            token,
             user.getLogin(),
             user.getRole().name());
     }

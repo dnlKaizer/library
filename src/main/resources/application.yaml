@@ -20,6 +20,5 @@ spring:
 api:
   security:
     token:
-      secret: ${JWT_SECRET:library-secret-change-me}
-      issuer: ${JWT_ISSUER:library-api}
+      secret: ${JWT_SECRET:7fK9xP2mQa8VwL4nRt6YcJ1zHs3Bd9XeTu5Gp0NkMi7ArF2QvW8sLj4ZhCn6DxYePq9Mv3KtRb1Xs8FgHu5Jn2LcWd7Ap0ZeTy4Vi6OmQk9Nr3BsCf1Gh8JxLu5DwEaZm7Vp2QnKs4Rt8YcHd1Fg6JwLx3Mb9NeTu0Ai5OpQr7Sv2Wx8YzCc4Dd6Ee1FfGh7Ii8Jj9Kk0Ll1Mm2Nn3Oo4Pp5Qq6Rr7Ss8Tt9Uu0Vv1Ww2Xx3Yy4Zz5Aa6Bb7Cc}
       expiration-hours: ${JWT_EXPIRATION_HOURS:24}
